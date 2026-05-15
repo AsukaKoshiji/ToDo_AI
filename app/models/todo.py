@@ -1,9 +1,11 @@
-from dataclasses import dataclass
+from sqlalchemy import Column, Integer, String, Boolean
+from app.db.database import Base
 
 
-@dataclass
-class Todo:
-    id: int
-    title: str
-    description: str = ""
-    completed: bool = False
+class Todo(Base):
+    __tablename__ = "todos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
+    description = Column(String(500), default="")
+    completed = Column(Boolean, default=False)
