@@ -69,6 +69,15 @@ sequenceDiagram
 #### エラーレスポンス
 - 500 Internal Server Error: DB接続エラー
 
+#### 異常系・戻り先
+| ケース | API応答 | messageId | nextAction | 戻り先 |
+| --- | --- | --- | --- | --- |
+| DB接続エラー | 500 SYSTEM_ERROR | e.common.system.001 | - | クライアント側エラー表示 |
+
+#### 補足
+- 空のリストは正常応答とし、warningsは不要。
+- 認証不要のAPIなので、セッション管理なし。
+
 ### 3.2 ToDo追加
 #### Endpoint
 POST /todos
@@ -96,6 +105,16 @@ POST /todos
 #### エラーレスポンス
 - 400 Bad Request: バリデーションエラー
 - 500 Internal Server Error: DB保存エラー
+
+#### 異常系・戻り先
+| ケース | API応答 | messageId | nextAction | 戻り先 |
+| --- | --- | --- | --- | --- |
+| titleが空または100文字超 | 400 VALIDATION_ERROR | e.common.validation.001 | - | クライアント側エラー表示 |
+| DB保存エラー | 500 SYSTEM_ERROR | e.common.system.001 | - | クライアント側エラー表示 |
+
+#### 補足
+- IDは自動生成し、重複なし。
+- completedはデフォルトfalse。
 
 ### 3.3 ToDo更新
 #### Endpoint
@@ -125,6 +144,16 @@ PUT /todos/{id}
 - 404 Not Found: 指定IDのToDoなし
 - 400 Bad Request: バリデーションエラー
 
+#### 異常系・戻り先
+| ケース | API応答 | messageId | nextAction | 戻り先 |
+| --- | --- | --- | --- | --- |
+| 指定IDのToDoが存在しない | 404 NOT_FOUND | e.todo.not_found.001 | - | クライアント側エラー表示 |
+| titleが空または100文字超 | 400 VALIDATION_ERROR | e.common.validation.001 | - | クライアント側エラー表示 |
+
+#### 補足
+- 部分更新可能（titleまたはcompletedのみ更新）。
+- updated_atは自動更新。
+
 ### 3.4 ToDo削除
 #### Endpoint
 DELETE /todos/{id}
@@ -137,6 +166,15 @@ No Content
 
 #### エラーレスポンス
 - 404 Not Found: 指定IDのToDoなし
+
+#### 異常系・戻り先
+| ケース | API応答 | messageId | nextAction | 戻り先 |
+| --- | --- | --- | --- | --- |
+| 指定IDのToDoが存在しない | 404 NOT_FOUND | e.todo.not_found.001 | - | クライアント側エラー表示 |
+
+#### 補足
+- 削除成功時は204 No Contentを返す。
+- 存在しないIDの削除はエラー扱い。
 
 ## 4. データベース設計詳細
 ### テーブル定義
@@ -169,3 +207,10 @@ CREATE TABLE todos (
 - シーケンス図生成: AIツールによる自動作成
 - コードレビュー: AIによる詳細設計の検証
 - テストケース生成: AIによる境界値テストの提案
+
+## 8. 実装・テスト着手ポイント
+- TodoRepository: CRUD操作の単体テストを優先（DB接続不要）。
+- TodoService: ビジネスロジックの統合テスト。
+- TodoRouter: APIエンドポイントの結合テスト（httpx使用）。
+- エラーハンドリング: 異常系のテストケースを網羅。
+- バリデーション: Pydanticスキーマの境界値テスト。
