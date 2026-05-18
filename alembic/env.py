@@ -11,6 +11,13 @@ config = context.config
 from app.db.database import Base
 from app.models.todo import Todo
 
+from os import getenv
+
+config.set_main_option(
+    "sqlalchemy.url",
+    getenv("DATABASE_URL")
+)
+
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

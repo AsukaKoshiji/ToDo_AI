@@ -1,5 +1,12 @@
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/todos")
+def get_todos():
+    return[{"id" : 1,"title": "sample"}]
 
 
 class TodoBase(BaseModel):

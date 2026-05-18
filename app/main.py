@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.routers import todo
+from app.api.routes import todo
 
 from app.api.routes.todo import router as todo_router
 
@@ -20,9 +20,7 @@ AI-Native 開発を前提に構築した ToDo API。
     version="1.0.0",
 )
 
-app.include_router(todo.router, prefix="/todos", tags=["Todos"])
-
-app.include_router(todo_router, prefix="/todos", tags=["todos"])
+app.include_router(todo.router)
 
 from app.db.database import Base, engine
 
