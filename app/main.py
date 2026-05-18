@@ -3,24 +3,10 @@ from app.api.routes import todo
 
 from app.api.routes.todo import router as todo_router
 
-app = FastAPI(
-    title="ToDo AI API",
-    description="""
-AI-Native 開発を前提に構築した ToDo API。
-
+app = FastAPI()
 ## Features
 
-- ToDo CRUD
-- MySQL
-- SQLAlchemy
-- Alembic Migration
-- pytest
-- Docker Support
-""",
-    version="1.0.0",
-)
-
-app.include_router(todo.router)
+app.include_router(todo_router)
 
 from app.db.database import Base, engine
 

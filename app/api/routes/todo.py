@@ -1,30 +1,53 @@
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
-router = APIRouter()
+from app.db.database import get_db
+from app.schemas.todo import TodoCreate, TodoUpdate, TodoOut
+from app.crud.todo import (
+    create_todo,
+    get_todos,
+    get_todo,
+    update_todo,
+    delete_todo
+)
 
-@router.get("/todos")
-def get_todos():
-    return[{"id" : 1,"title": "sample"}]
-
-
-class TodoBase(BaseModel):
-    title: str = Field(
-        ...,
-        json_schema_extra={"example": "買い物に行く"}
-    )
-    description: Optional[str] = Field(
-        "",
-        json_schema_extra={"example": "牛乳を買う"}
-    )
-    completed: bool = Field(
-        False,
-        json_schema_extra={"example": False}
-    )
+router = APIRouter(prefix="/todos", tags=["todos"])
 
 
-class TodoResponse(TodoBase):
-    id: int
+# CREATE
+@router.post("/", response_model=TodoOut)
+def create(todo: TodoCreate, db: Session = Depends(get_db)):
+    return create_todo(db, todo)
 
-    model_config = ConfigDict(from_attributes=True)
+
+# READ ALL
+@router.get("/", response_model=list[TodoOut])
+def read_all(db: Session = Depends(get_db)):
+    return get_todos(db)
+
+
+# READ ONE
+@router.get("/{todo_id}", response_model=TodoOut)
+def read_one(todo_id: int, db: Session = Depends(get_db)):
+    todo = get_todo(db, todo_id)
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return todo
+
+
+# UPDATE
+@router.put("/{todo_id}", response_model=TodoOut)
+def update(todo_id: int, todo: TodoUpdate, db: Session = Depends(get_db)):
+    updated = update_todo(db, todo_id, todo)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return updated
+
+
+# DELETE
+@router.delete("/{todo_id}")
+def delete(todo_id: int, db: Session = Depends(get_db)):
+    deleted = delete_todo(db, todo_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return {"message": "deleted"}
