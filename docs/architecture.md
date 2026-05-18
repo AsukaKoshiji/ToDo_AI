@@ -10,10 +10,13 @@ MySQL
 
 ## ディレクトリ構成
 
-api/
-schema/
-models/
-crud/
+app/
+├── api/
+├── schemas/
+├── models/
+├── crud/
+├── db/
+└── main.py
 
 ## 責務
 
@@ -21,7 +24,7 @@ api :
 ルーティングを担当
 
 schema :
-rewuest/response定義
+request/response定義
 
 models：
 DBモデル定義
@@ -35,3 +38,5 @@ DB操作枠
 ーMySQL
 ーDocker
 ーPoetry
+ーSQLAlchemy
+ーAlembic

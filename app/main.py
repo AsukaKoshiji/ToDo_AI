@@ -1,10 +1,9 @@
 from fastapi import FastAPI
-from app.api.routes import todo
 
 from app.api.routes.todo import router as todo_router
 
 app = FastAPI()
-## Features
+
 
 app.include_router(todo_router)
 
