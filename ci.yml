@@ -9,6 +9,22 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: todo_db
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,6 +40,15 @@ jobs:
       - name: Install Dependencies
         run: poetry install
 
+      - name: Run Alembic Migration
+        run: poetry run alembic upgrade head
+        env:
+          DATABASE_URL: mysql+mysqlconnector://user:password@127.0.0.1:3306/todo_db
+
       - name: Run Tests
         run: poetry run pytest
-        
+        env:
+          DATABASE_URL: mysql+mysqlconnector://user:password@127.0.0.1:3306/todo_db
+
+      - name: Docker Build
+        run: docker build -t todo-api .
