@@ -1,5 +1,14 @@
-import sys
-from pathlib import Path
+import pytest
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT_DIR))
+from app.db.database import SessionLocal
+from app.models.todo import Todo
+
+
+@pytest.fixture(autouse=True)
+def clear_database():
+    db = SessionLocal()
+
+    db.query(Todo).delete()
+    db.commit()
+
+    db.close()

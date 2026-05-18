@@ -26,11 +26,17 @@ def read_todo(todo_id: int, db: Session = Depends(get_db)) -> TodoResponse:
     return todo
 
 
-@router.put("/{todo_id}", response_model=TodoResponse, summary="Update a todo")
-def update_todo(todo_id: int, update: TodoUpdate, db: Session = Depends(get_db)) -> TodoResponse:
-    todo = update(db, todo_id, update)
-    if not todo:
+@router.put("/{todo_id}", response_model=TodoResponse)
+def update_todo(
+    todo_id: int,
+    todo_update: TodoUpdate,
+    db: Session = Depends(get_db)
+):
+    todo = update(db, todo_id, todo_update)
+
+    if todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
+
     return todo
 
 

@@ -1,6 +1,7 @@
 # ToDo_AI
 
-AI-Native開発を意識して構築している ToDo API アプリケーション。
+AI-Native開発を前提として設計・実装している
+ToDo API アプリケーション。
 
 FastAPI をベースに、
 Docker・Poetry・Pydantic・pytest を利用しながら、
@@ -19,6 +20,8 @@ Docker・Poetry・Pydantic・pytest を利用しながら、
 * APIテスト
 * Docker対応
 * Poetryによる依存管理
+* MySQL連携
+* Alembicマイグレーション
 
 ---
 
@@ -26,6 +29,9 @@ Docker・Poetry・Pydantic・pytest を利用しながら、
 
 * Python 3.14
 * FastAPI
+* SQLAIchemy
+* Alembic
+: MySQL
 * Pydantic v2
 * pytest
 * Docker

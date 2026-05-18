@@ -6,7 +6,12 @@ app = FastAPI(title="ToDo API", version="0.1.0")
 
 app.include_router(todo_router, prefix="/todos", tags=["todos"])
 
+from app.db.database import Base, engine
+
+from app.models.todo import Todo
 
 @app.get("/", summary="Root endpoint")
 def read_root() -> dict[str, str]:
     return {"message": "hello"}
+
+Base.metadata.create_all(bind=engine)
